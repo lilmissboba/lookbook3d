@@ -267,7 +267,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   const materialCache = new Map(), geometryCache = new Map();
   const frontAxis = new T.Vector3(0, 0, 1);
   const SKINS = ['#FDE7D6','#F6D2B8','#EBB994','#D59D76','#B97D58','#8C5A3E'];
-  const HAIRED_HATS = new Set(['pumpkinhat','beanie','frog','cap','bucket','beret','sunhat','chef','santa','witch','strawberry']);
+  const HAIRED_HATS = new Set(['turkeyhat','pumpkinhat','beanie','frog','cap','bucket','beret','sunhat','chef','santa','santared','witch','strawberry']);
   const HAIR_NAMES = ['bob','long','short','buns','pigtails','ponytail','curly','messy','wavy','bald','curtain','twoblock','quiff','spiky','buzz','manbun','sidepart'];
 
   function mix(a, b, amount) {
@@ -856,7 +856,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     const acc = look.shirt || '#E8A0A8';
     const dark = mix(acc, '#3A2419', .22), light = mix(acc, '#FFFFFF', .35);
     const season = look.seasonShirt || '';
-    const seasonalHats = { pumpkin: 'pumpkinhat', devil: 'devilhorns', angel: 'halo' };
+    const seasonalHats = { pumpkin: 'pumpkinhat', devil: 'devilhorns', angel: 'halo', turkeycostume: 'turkeyhat', santasuit: 'santared' };
     const hat = look.hat || seasonalHats[season] || 'none';
     const accessories = new T.Group();
     accessories.name = 'cafe-accessories';
@@ -1156,6 +1156,19 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
         U(accessories,'#6B8B54',[[0,2.42,0],[.03,2.54,0]],.023);
         break;
       }
+      case 'turkeyhat': {   // a turkey head: a round brown hood, big eyes, beak, red wattle and a little feather tuft on top
+        dome(accessories,'#B98457',.645,.45,.575,2.02);
+        for (const s of [-1,1]) {
+          E(accessories,'#FFFDF6',s*.17,2.29,.45,.095,.105,.05);
+          E(accessories,'#34302B',s*.165,2.285,.492,.05,.058,.02,{roughness:.22});
+          E(accessories,'#FFFFFF',s*.165+.015,2.305,.508,.015,.017,.006);
+          const brow=E(accessories,'#93653F',s*.17,2.405,.40,.07,.016,.02); brow.rotation.z=-s*.25;
+        }
+        const beak=E(accessories,'#F2B04C',0,2.15,.57,.075,.058,.125,{roughness:.4}); beak.rotation.x=.35;
+        E(accessories,'#E8726B',.04,2.055,.615,.034,.08,.034);
+        [[-.08,'#E8635E',-.4],[0,'#F7D58A',0],[.08,'#F2B279',.4],[-.04,'#9CC78E',-.2]].forEach(([x,c,r])=>{ const f=E(accessories,c,x,2.55,-.04,.05,.15,.035); f.rotation.z=r; });
+        break;
+      }
       case 'pumpkinhat': {
         const mesh=dome(accessories,'#EFA25E',.64,.37,.56,2.03), g=mesh.geometry;
         const pos=g.attributes.position;
@@ -1237,8 +1250,8 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
         poly(accessories,'#EBE6F6',[[-.35,0],[-.28,.20],[-.15,.09],[0,.33],[.15,.09],[.28,.20],[.35,0]],.038,0,2.14,.32,{roughness:.27,metalness:.38});
         [[0,2.36,.043,'#ECA3BF'],[-.23,2.27,.029,'#AECBE9'],[.23,2.27,.029,'#AECBE9']].forEach(([x,y,r,c])=>E(accessories,c,x,y,.352,r,r,.023,{roughness:.20}));
         break;
-      case 'santa':
-        taper(accessories,'#EBACBA',[[0,2.04,0],[0,2.28,0],[.10,2.51,0],[.34,2.62,0],[.60,2.48,.015]],[.59,.48,.32,.17,.008]);
+      case 'santa': case 'santared':   // santared: the bright red one that comes with the santa suit
+        taper(accessories,hat==='santared'?'#D7303A':'#EBACBA',[[0,2.04,0],[0,2.28,0],[.10,2.51,0],[.34,2.62,0],[.60,2.48,.015]],[.59,.48,.32,.17,.008]);
         puffBand(accessories,'#FFFDF6',2.045,.59,.52,.081);
         E(accessories,'#FFFDF6',.62,2.48,.015,.13,.13,.13);
         break;
@@ -1508,6 +1521,16 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
         dot('#44322D',-.018,.818,.009);patch('#EFCF7D',[[0,0],[.042,-.014],[0,-.028]],.023,.803);
         line('#D87576',[[.012,.777],[.021,.748],[.043,.742]],.009);hem('#FFF7EB',.435);hem('#FFF7EB',.48);
         break;
+      case 'turkeycostume': {   // a round brown turkey body with a feather fan on the back and little wings
+        dot('#E9C9A2',0,.69,.13,.165,.014);
+        for(const [x,y] of [[-.15,.86],[.15,.86],[0,.92],[-.19,.70],[.19,.70]]) line('#D3A274',[[x-.035,y+.02],[x,y-.01],[x+.035,y+.02]],.007);
+        for(const y of [.71,.63]) line('#C9A17B',[[-.04,y+.015],[0,y-.008],[.04,y+.015]],.006);
+        const fan=['#E8635E','#F2B279','#F7D58A','#9CC78E','#F7D58A','#F2B279','#E8635E','#F2B279','#F7D58A'];
+        fan.forEach((c,i)=>{ const a=(18+i*18)*Math.PI/180, f=E(accessories,c,Math.cos(a)*.40,.80+Math.sin(a)*.40,-.36,.10,.30,.04); f.rotation.z=a-Math.PI/2; });
+        fan.slice(1,8).forEach((c,i)=>{ const a=(36+i*18)*Math.PI/180, f=E(accessories,mix(c,'#8A5A3B',.35),Math.cos(a)*.27,.80+Math.sin(a)*.27,-.32,.07,.19,.035); f.rotation.z=a-Math.PI/2; });
+        for(const s of [-1,1]){ const w=E(accessories,'#A47450',s*.36,.72,-.06,.07,.17,.12); w.rotation.z=s*.32; }
+        break;
+      }
       case 'leaf':
         patch('#DA9873',[[0,.15],[.030,.075],[.09,.105],[.075,.03],[.15,.03],[.105,-.015],[.135,-.06],[.045,-.045],[.03,-.105],[0,-.06],[-.03,-.105],[-.045,-.045],[-.135,-.06],[-.105,-.015],[-.15,.03],[-.075,.03],[-.09,.105],[-.03,.075]],0,.75);
         line('#A17A57',[[0,.72],[0,.57]],.008);line('#BF7E5C',[[0,.71],[-.065,.79]],.004);line('#BF7E5C',[[0,.71],[.065,.79]],.004);
@@ -1530,6 +1553,17 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
         line('#FFF8EF',[[-.020,.815],[0,.803],[.020,.815]],.004);
         dot('#E49AA6',0,.735,.013,.013,.014);dot('#A6BD90',0,.686,.013,.013,.014);
         break;
+      case 'santasuit': {   // a santa suit: fluffy white trim down the front and around the hem, black belt with a gold buckle
+        box('#FFFDF6',0,.735,.055,.40);
+        for(const y of [.88,.80,.72,.66,.58]) dot('#FFFDF6',0,y,.034,.030,.012);
+        const belt=Math.min(.6,.576*Math.sqrt(Math.max(.02,1-((.62-.746)/.323)**2))*.98);
+        box('#3E3238',0,.62,belt,.06);
+        box('#F1CF7A',0,.62,.085,.078);box(acc,0,.62,.05,.042);
+        hem('#FFFDF6',.435);hem('#FFFDF6',.47);
+        for(let i=0;i<9;i++){ const x=-.26+i*.065; dot('#FFFDF6',x,.525,.036,.032,.014); }
+        collar('#FFFDF6');for(const x of [-.10,-.05,.05,.10]) dot('#FFFDF6',x,.965-Math.abs(x)*.12,.03,.026,.012);
+        break;
+      }
       case 'xmastree':
         patch('#7AA168',[[0,.18],[-.095,.05],[-.055,.05],[-.12,-.065],[-.075,-.065],[-.15,-.16],[.15,-.16],[.075,-.065],[.12,-.065],[.055,.05],[.095,.05]],0,.75);
         box('#AC805A',0,.565,.042,.047);pstar('#EFCF7B',0,.946,.037);
@@ -1749,7 +1783,7 @@ const OUTFITS = { taro:"#9C7BB5", matcha:"#8DAA6A", strawberry:"#E8A0A8", mango:
   cream:"#F2E3C9", sage:"#6F8F7A", peach:"#F0B495", lavender:"#C3A5E8", mint:"#9ED6C0", navy:"#3E4A7A", black:"#3A3440",
   red:"#C4515C", yellow:"#F2D36B", pink:"#F4B6C8", white:"#F7F2EA" };
 const PANTS = ["#4A3A55","#3E4A5C","#5B4636","#2F3A33","#6B5A4A"];
-const HATS = ["none","beanie","bow","cat","bunny","frog","flower","headphones","crown","bear","fox","puppy","panda","boba","strawberry","pumpkinhat","devilhorns","beret","bucket","cap","sunhat","chef","flowercrown","halo","starclips","headband","tiara","santa","witch","party"];
+const HATS = ["none","beanie","bow","cat","bunny","frog","flower","headphones","crown","bear","fox","puppy","panda","boba","strawberry","pumpkinhat","turkeyhat","devilhorns","beret","bucket","cap","sunhat","chef","flowercrown","halo","starclips","headband","tiara","santa","witch","party"];
 const WEARS = ["none","scarf","backpack","handbag","wings","cape","balloon","bouquet","crossbody","cattail"];
 
 const NAME_COLORS = ["#F2A2B0","#B89BD1","#9DBB74","#EDA35A","#8FC1D4","#F4D06F","#E58F7C","#C3A5E8"];
@@ -1890,9 +1924,11 @@ function hatSVG(hat, hairC, acc) {
     case "headband": return `<path d="M16.5 41C15 16 65 16 63.5 41C61 22 19 22 16.5 41Z" fill="${acc}"/><path d="M24 26C30 20.5 50 20.5 56 26" stroke="${light}" stroke-width="1.2" fill="none" stroke-linecap="round"/>`;
     case "tiara": return `<path d="M26 26L29 17L34 22L40 13L46 22L51 17L54 26Z" fill="#EEE9F7" stroke="#C9C2DC" stroke-width="1" stroke-linejoin="round"/><circle cx="40" cy="18.5" r="2.2" fill="#F5AAC0"/><circle cx="31" cy="21.5" r="1.4" fill="#BAD5FF"/><circle cx="49" cy="21.5" r="1.4" fill="#BAD5FF"/>`;
     case "santa": return `<path d="M17 36C17 20 28 14 40 14C51 14 58 19 62 26L71 33L63 32C63 34 63 35 63 36Z" fill="#F4A6A3"/><rect x="15" y="33" width="50" height="8" rx="4" fill="#FFFFFF"/><circle cx="71" cy="34" r="4.6" fill="#FFFFFF"/>`;
+    case "santared": return `<path d="M17 36C17 20 28 14 40 14C51 14 58 19 62 26L71 33L63 32C63 34 63 35 63 36Z" fill="#D7303A"/><path d="M22 26Q34 17 48 18" stroke="#FFFFFF" stroke-width="2" fill="none" opacity=".25" stroke-linecap="round"/><rect x="15" y="33" width="50" height="8" rx="4" fill="#FFFFFF"/><circle cx="71" cy="34" r="4.6" fill="#FFFFFF"/>`;   // the bright red one that comes with the santa suit
     case "witch": return `<ellipse cx="40" cy="26" rx="31" ry="6" fill="#B19ADB"/><path d="M17 26Q22 20 29 14Q37 4 45 -9Q48 6 53 14Q59 20 63 26Q40 30 17 26Z" fill="#C9B0EC"/><path d="M19 23Q40 27 61 23L62 26Q40 30 18 26Z" fill="#F9C08E"/>`;
     case "party": return `<path d="M29 24L40 -4L51 24Z" fill="#BAD5FF"/><path d="M34 12l10 2.5M31.5 18l17 3.5M37 5l6 1.5" stroke="#F8C0D1" stroke-width="2.4" stroke-linecap="round"/><circle cx="40" cy="-5" r="3.5" fill="#FFE3AA"/>`;
     case "sparklecrown": return `<path d="M25 25L26 9L33 16L40 5L47 16L54 9L55 25Z" fill="#F7D65A" stroke="#E0B23A" stroke-width="1.2" stroke-linejoin="round"/><rect x="24.5" y="22" width="31" height="5" rx="2" fill="#F2C94C" stroke="#E0B23A" stroke-width="1"/><circle cx="40" cy="15" r="2.8" fill="#F28DAA"/><circle cx="31.5" cy="18.5" r="1.8" fill="#AFC8EE"/><circle cx="48.5" cy="18.5" r="1.8" fill="#AFC8EE"/><circle cx="40" cy="24.5" r="1.4" fill="#FFFFFF"/><g class="twinkle" style="animation-duration:1.4s"><path d="M20 10l1 2.6 2.6 1-2.6 1-1 2.6-1-2.6-2.6-1 2.6-1z" fill="#FFF6C8"/></g><g class="twinkle" style="animation-duration:1.9s;animation-delay:-.6s"><path d="M60 7l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z" fill="#FFF6C8"/></g><g class="twinkle" style="animation-duration:1.6s;animation-delay:-1.1s"><path d="M42 0l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z" fill="#FFFFFF"/></g>`;
+    case "turkeyhat": return `<path d="M15 37C13 22 25 12.5 40 12.5C55 12.5 67 22 65 37Q40 42 15 37Z" fill="#B9845A" stroke="#93653F" stroke-width="1"/><path d="M22 33Q40 37 58 33" stroke="#D3A274" stroke-width="1.4" fill="none" opacity=".7"/><g transform="translate(40 13)"><ellipse cx="-4.5" cy="-2" rx="2" ry="5" fill="#E8635E" transform="rotate(-24 -4.5 -2)"/><ellipse cx="0" cy="-3.4" rx="2.1" ry="5.4" fill="#F7D58A"/><ellipse cx="4.5" cy="-2" rx="2" ry="5" fill="#F2B279" transform="rotate(24 4.5 -2)"/></g><circle cx="33.5" cy="24.5" r="4" fill="#FFFFFF"/><circle cx="46.5" cy="24.5" r="4" fill="#FFFFFF"/><circle cx="34" cy="25" r="2.1" fill="#3A2419"/><circle cx="46" cy="25" r="2.1" fill="#3A2419"/><circle cx="34.7" cy="24.2" r=".7" fill="#FFFFFF"/><circle cx="46.7" cy="24.2" r=".7" fill="#FFFFFF"/><path d="M36.4 28.6h7.2L40 34.4z" fill="#F2B04C" stroke="#E0923A" stroke-width=".6" stroke-linejoin="round"/><path d="M41.6 32.6q2.6 3.4 .2 6.8q-2.7-2.9-.2-6.8z" fill="#E8635E"/>`;
     case "pumpkinhat": return `<path d="M15 37C12 28 16 19 24 17C27 14 33 14 36 16C38 14.2 42 14.2 44 16C47 14 53 14 56 17C64 19 68 28 65 37Q40 43 15 37Z" fill="#F29A45" stroke="#D2742A" stroke-width="1"/><clipPath id="pkClip"><path d="M15 37C12 28 16 19 24 17C27 14 33 14 36 16C38 14.2 42 14.2 44 16C47 14 53 14 56 17C64 19 68 28 65 37Q40 43 15 37Z"/></clipPath><g clip-path="url(#pkClip)"><path d="M24 17C21 25 20.6 32 23 39.2M36 16C33.4 24 32.6 32 33.6 40.8M44 16C46.6 24 47.4 32 46.4 40.8M56 17C59 25 59.4 32 57 39.2" stroke="#D9782E" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M38.4 19.5C37.4 25 37.4 31 38.2 36" stroke="#FFC485" stroke-width="2" fill="none" stroke-linecap="round" opacity=".7"/><path d="M27 21C25.6 25 25.4 29 26 33" stroke="#FFB870" stroke-width="1.4" fill="none" stroke-linecap="round" opacity=".6"/></g><path d="M38.4 16.2Q37.6 11 39.8 7.8L42.8 8.6Q41 11.6 41.8 16.2Z" fill="#7A5A3A" stroke="#5E4428" stroke-width=".6"/><path d="M42.4 11q5.4-4.6 10.6-.6q-4.8 4-10.6.6z" fill="#8DC47A" stroke="#6FA35C" stroke-width=".6"/><path d="M38.6 11.6q-3.8-1.8-4.8 1q-.6 2.2 1.6 2q1.2-.2.9-1.4" stroke="#6FA35C" stroke-width=".9" fill="none" stroke-linecap="round"/>`;
     case "crown": return `<path d="M29 23L29 11L34.5 17L40 8L45.5 17L51 11L51 23Z" fill="#F2C94C" stroke="#D9A93A" stroke-width="1"/><circle cx="40" cy="16" r="1.8" fill="#E8A0A8"/>`;
     default: return "";
@@ -1956,13 +1992,15 @@ const SEASON_OUTFITS = {
   angel:        { season: "halloween", label: "angel", base: "#FFFFFF" },
   turkey:       { season: "thanksgiving", label: "turkey sweater", base: "#E8A07A" },
   leaf: { season: "thanksgiving", label: "autumn leaf sweater", base: "#F7D58A" },
+  turkeycostume: { season: "thanksgiving", label: "turkey costume", base: "#B9845A" },
   reindeer:     { season: "christmas",  label: "reindeer sweater", base: "#A7D7B6" },
   snowflake:    { season: "christmas",  label: "snowflake sweater", base: "#AFC8EE" },
   gingerbread: { season: "christmas", label: "gingerbread sweater", base: "#F4A6A3" },
-  xmastree: { season: "christmas", label: "christmas tree sweater", base: "#F4A6A3" }
+  xmastree: { season: "christmas", label: "christmas tree sweater", base: "#F4A6A3" },
+  santasuit: { season: "christmas", label: "santa suit", base: "#D7303A" }
 };
 const OUTFIT_PALETTES = {"cheongsam": ["#E8635E", "#F5AAC0", "#A7D7B6", "#AFC8EE", "#C9B0EC", "#3A4A7A"], "heartsweater": ["#F7C6D4", "#FFFFFF", "#D2C0F2", "#BAD5FF", "#FFE3AA", "#C4E7CC"], "spring": ["#FFE3AA", "#F8C0D1", "#C4E7CC", "#BAD5FF", "#D2C0F2", "#FFCBAF"], "ghost": ["#D2C0F2", "#F8C0D1", "#BAD5FF", "#C4E7CC", "#FFCBAF", "#7C6F9E"], "turkey": ["#E8A07A", "#F7D58A", "#C99A6B", "#F4A6A3", "#A7D7B6", "#C9B0EC"], "reindeer": ["#A7D7B6", "#F4A6A3", "#AFC8EE", "#F8C0D1", "#F7D58A", "#C9B0EC"], "snowflake": ["#AFC8EE", "#C9B0EC", "#F4A6A3", "#A7D7B6", "#8FA6E8", "#F8C0D1"], "witchcat": ["#F9C08E", "#D2C0F2", "#C4E7CC", "#F8C0D1", "#FFE3AA", "#BAD5FF"], "mandarin": ["#F4A6A3", "#FFFFFF", "#FFE3AA", "#A7D7B6", "#F8C0D1"], "loveletter": ["#F8C0D1", "#D2C0F2", "#FFE3AA", "#BAD5FF", "#FFFFFF"], "bunny": ["#C4E7CC", "#F8C0D1", "#FFE3AA", "#BAD5FF", "#D2C0F2"], "orchid": ["#FFFFFF", "#F8C0D1", "#FFE3AA", "#C4E7CC"], "leaf": ["#F7D58A", "#FFCBAF", "#C99A6B", "#A7D7B6", "#F3E6D4"], "gingerbread": ["#F4A6A3", "#A7D7B6", "#FFFFFF", "#AFC8EE", "#C9B0EC"], "xmastree": ["#F4A6A3", "#FFFFFF", "#FFE3AA", "#AFC8EE", "#F8C0D1"]};   // a random one each visit
-const OUTFIT_HATS = { pumpkin: "pumpkinhat", devil: "devilhorns", angel: "halo" };   // costumes that come with a hat
+const OUTFIT_HATS = { pumpkin: "pumpkinhat", devil: "devilhorns", angel: "halo", turkeycostume: "turkeyhat", santasuit: "santared" };   // costumes that come with a hat
 const SEASON_NAMES = { lunar: "Lunar New Year", valentines: "Valentine's Day", easter: "Easter", july4: "the 4th of July", nationalday: "National Day", halloween: "Halloween", thanksgiving: "Thanksgiving", christmas: "Christmas" };
 function activeSeasonOutfit(k) {
   const o = k.seasonShirt && SEASON_OUTFITS[k.seasonShirt];
@@ -1990,6 +2028,8 @@ function outfitPattern(key) {
     case "gingerbread": return `<g ${clip}><circle cx="40" cy="80.4" r="2.4" fill="#C98A5A"/><path d="M37.6 83h4.8l2.6 1.6-.6 1-2-.8v3.2l1.6 3-1 .6-3-2.6-3 2.6-1-.6 1.6-3v-3.2l-2 .8-.6-1z" fill="#C98A5A"/><circle cx="39.2" cy="80" r=".4" fill="#FFFFFF"/><circle cx="40.8" cy="80" r=".4" fill="#FFFFFF"/><path d="M39.2 81.2q.8.6 1.6 0" stroke="#FFFFFF" stroke-width=".4" fill="none"/><circle cx="40" cy="85.2" r=".5" fill="#F28D8D"/><circle cx="40" cy="87" r=".5" fill="#A7D7B6"/></g>`;
     case "xmastree": return `<g ${clip}><path d="M40 77.6L36 83h1.6L35 87.4h2L34 91.4h12l-3-4h2L42.4 83H44z" fill="#6FA35C"/><rect x="39.2" y="91.4" width="1.6" height="1.6" fill="#A8745A"/><path d="M40 76.2l.5 1 1.1.1-.8.7.2 1.1-1-.5-1 .5.2-1.1-.8-.7 1.1-.1z" fill="#F7DE6A"/><circle cx="38.4" cy="85" r=".6" fill="#F28D8D"/><circle cx="41.6" cy="86.6" r=".6" fill="#FFE07A"/><circle cx="39" cy="89.6" r=".6" fill="#AFC8EE"/><circle cx="42.4" cy="90" r=".6" fill="#F8C0D1"/></g>`;
     case "ghostcostume": return "";
+    case "turkeycostume": return `<g ${clip}><ellipse cx="40" cy="88" rx="7.5" ry="9" fill="#E9C9A2"/><g stroke="#D3A274" stroke-width="1.1" fill="none" stroke-linecap="round"><path d="M31 77l2 2 2-2M45 77l2 2 2-2M38 73.5l2 2 2-2M30 85l2 2 2-2M46 85l2 2 2-2"/></g><g stroke="#C9A17B" stroke-width=".9" fill="none" stroke-linecap="round" opacity=".8"><path d="M37 85l3 2 3-2M37 90l3 2 3-2"/></g></g>`;
+    case "santasuit": return `<g ${clip}><rect x="38.5" y="70" width="3" height="28" fill="#FFFDF6"/><rect x="26" y="86" width="28" height="3.8" fill="#3E3238"/><rect x="37.4" y="85.2" width="5.2" height="5.4" rx=".8" fill="none" stroke="#F2C94C" stroke-width="1.3"/>${[28,31.5,35,38.5,42,45.5,49,52.5].map(x => `<circle cx="${x}" cy="97.4" r="2.3" fill="#FFFDF6"/>`).join("")}<path d="M33.5 71.2q6.5 3.6 13 0" stroke="#FFFDF6" stroke-width="3.2" fill="none" stroke-linecap="round"/><circle cx="40" cy="79" r=".9" fill="#E8E2DA"/><circle cx="40" cy="93" r=".9" fill="#E8E2DA"/></g>`;
     case "devil": return `<g ${clip}><path d="M36 82c-1.6-1.8-4.4-.6-3.4 1.6l3.4 3.2 3.4-3.2c1-2.2-1.8-3.4-3.4-1.6z" transform="translate(4 0)" fill="#3A2419"/><path d="M34 71q6 3 12 0" stroke="#3A2419" stroke-width="1.6" fill="none" opacity=".5"/></g>`;
     case "angel": return `<g ${clip}><path d="M34 71q6 3.4 12 0" stroke="#F2C94C" stroke-width="2" fill="none"/><path d="M28 96h24" stroke="#F2C94C" stroke-width="1.8"/><path d="M40 80l1 2.4 2.6.2-2 1.6.6 2.6-2.2-1.4-2.2 1.4.6-2.6-2-1.6 2.6-.2z" fill="#F7DE6A"/></g>`;
     case "turkey": return `<g ${clip}>${["#E8635E","#F2B279","#F7D58A","#9CC78E","#F2B279","#E8635E"].map((c, i) => `<ellipse cx="${40 + Math.cos((200 + i * 28) * Math.PI / 180) * 7}" cy="${86 + Math.sin((200 + i * 28) * Math.PI / 180) * 7}" rx="2.6" ry="4.2" fill="${c}" transform="rotate(${-70 + i * 28} ${40 + Math.cos((200 + i * 28) * Math.PI / 180) * 7} ${86 + Math.sin((200 + i * 28) * Math.PI / 180) * 7})"/>`).join("")}<ellipse cx="40" cy="87" rx="5" ry="5.4" fill="#A87450"/><circle cx="40" cy="81.5" r="2.8" fill="#C99A6B"/><path d="M40.4 82.2l2 .8-2 .8z" fill="#F7D58A"/><path d="M39.4 83.4q.4 1.6 1.4 1.6" stroke="#E8635E" stroke-width="1" fill="none"/><circle cx="39.4" cy="81" r=".6" fill="#3A2419"/><g stroke="#FFFFFF" stroke-width="1" opacity=".55"><path d="M28 95h24M28 97.4h24"/></g></g>`;
@@ -2057,7 +2097,7 @@ function cupFx(key) {   // extra details drawn inside the cup, in cup coordinate
   }
 }
 // hats that sit over the hair: hide any hair poking out above their brim (so big styles like wavy stay tucked in)
-const HAT_HAIR_CUT = { pumpkinhat: 35, beanie: 36, frog: 34, cap: 33, bucket: 30, beret: 26, sunhat: 26, chef: 30, santa: 34, witch: 24, strawberry: 35 };
+const HAT_HAIR_CUT = { santared: 34, turkeyhat: 35, pumpkinhat: 35, beanie: 36, frog: 34, cap: 33, bucket: 30, beret: 26, sunhat: 26, chef: 30, santa: 34, witch: 24, strawberry: 35 };
 function spriteSVG(k) {
   const sOut = activeSeasonOutfit(k);
   if (sOut === "ghostcostume") k = Object.assign({}, k, { hat: "none", glasses: "none", wear: "none", style: HAIR_STYLES.indexOf("bald") });   // the sheet covers everything
@@ -2085,6 +2125,7 @@ function spriteSVG(k) {
     ${k.wear === "backpack" || k.wear === "cape" ? wearBack(k.wear, k.tint) : ""}
     ${sOut === "devil" ? `<path d="M50 94Q64 98 63 84Q62 76 66 72" stroke="#E8635E" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M66 72l-3.4 1.4 1.8 3.4z" fill="#E8635E" stroke="#E8635E" stroke-width="1.6" stroke-linejoin="round"/>` : ""}
     ${sOut === "angel" ? `<path d="M30 78Q14 66 8 78Q12 84 18 82Q14 90 22 90Q26 88 30 84Z" fill="#FFFFFF" stroke="#E4DDD3" stroke-width="1"/><path d="M50 78Q66 66 72 78Q68 84 62 82Q66 90 58 90Q54 88 50 84Z" fill="#FFFFFF" stroke="#E4DDD3" stroke-width="1"/>` : ""}
+    ${sOut === "turkeycostume" ? `<g class="turkeyfan">${["#E8635E","#F2B279","#F7D58A","#9CC78E","#F7D58A","#F2B279","#E8635E"].map((c, i) => { const a = 200 + i * 23.3, r = Math.PI / 180, x = (40 + Math.cos(a * r) * 17).toFixed(1), y = (84 + Math.sin(a * r) * 17).toFixed(1); return `<ellipse cx="${x}" cy="${y}" rx="5" ry="11.5" fill="${c}" stroke="rgba(90,56,38,.15)" stroke-width="1" transform="rotate(${(a + 90).toFixed(1)} ${x} ${y})"/>`; }).join("")}</g>` : ""}
     ${k.wear === "cattail" ? `<path d="M47 95Q60 98 62 86Q64 76 57 74" stroke="${k.hair}" stroke-width="4.2" fill="none" stroke-linecap="round"/><path d="M57 74q-2 1 -1.6 3" stroke="${k.hair}" stroke-width="4.2" fill="none" stroke-linecap="round"/>` : ""}
     <clipPath id="shirtClip"><path d="M28 98C27 83 31 71 40 70C49 71 53 83 52 98Z"/></clipPath>
     <path d="M28 98C27 83 31 71 40 70C49 71 53 83 52 98Z" fill="${shirtC}"/>${sOut ? outfitPattern(sOut) : ""}
