@@ -1521,14 +1521,16 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
         dot('#44322D',-.018,.818,.009);patch('#EFCF7D',[[0,0],[.042,-.014],[0,-.028]],.023,.803);
         line('#D87576',[[.012,.777],[.021,.748],[.043,.742]],.009);hem('#FFF7EB',.435);hem('#FFF7EB',.48);
         break;
-      case 'turkeycostume': {   // a round brown turkey body with a feather fan on the back and little wings
-        dot('#E9C9A2',0,.69,.13,.165,.014);
-        for(const [x,y] of [[-.15,.86],[.15,.86],[0,.92],[-.19,.70],[.19,.70]]) line('#D3A274',[[x-.035,y+.02],[x,y-.01],[x+.035,y+.02]],.007);
-        for(const y of [.71,.63]) line('#C9A17B',[[-.04,y+.015],[0,y-.008],[.04,y+.015]],.006);
-        const fan=['#E8635E','#F2B279','#F7D58A','#9CC78E','#F7D58A','#F2B279','#E8635E','#F2B279','#F7D58A'];
-        fan.forEach((c,i)=>{ const a=(18+i*18)*Math.PI/180, f=E(accessories,c,Math.cos(a)*.40,.80+Math.sin(a)*.40,-.36,.10,.30,.04); f.rotation.z=a-Math.PI/2; });
-        fan.slice(1,8).forEach((c,i)=>{ const a=(36+i*18)*Math.PI/180, f=E(accessories,mix(c,'#8A5A3B',.35),Math.cos(a)*.27,.80+Math.sin(a)*.27,-.32,.07,.19,.035); f.rotation.z=a-Math.PI/2; });
-        for(const s of [-1,1]){ const w=E(accessories,'#A47450',s*.36,.72,-.06,.07,.17,.12); w.rotation.z=s*.32; }
+      case 'turkeycostume': {   // a big round turkey: brown feathery body over the torso and most of the legs, a cream belly, wings and a big feather fan
+        E(accessories,'#B98457',0,.60,.04,.46,.47,.42);                                         // the round turkey body
+        E(accessories,'#EBCBA3',0,.58,.39,.21,.27,.07);                                         // cream belly
+        for(const y of [.70,.58,.46]) { const w=E(accessories,'#D6AC80',0,y,.455,.07,.016,.012); }
+        for(let r=0;r<3;r++) for(let i=0;i<9;i++){ const a=(-.95+i*.24), y=.82-r*.17, rad=Math.sqrt(Math.max(.05,1-((y-.60)/.47)**2)); if(Math.abs(a)<.42&&r>0) continue;
+          E(accessories,'#A47450',Math.sin(a)*.44*rad,y,.04+Math.cos(a)*.40*rad,.06,.03,.035); }   // feather scallops
+        for(const s of [-1,1]){ const w=E(accessories,'#A47450',s*.43,.62,-.02,.10,.25,.20); w.rotation.z=s*.18; }   // folded wings
+        const fan=['#E8635E','#F2B279','#F7D58A','#9CC78E','#F7D58A','#F2B279','#E8635E','#F2B279','#F7D58A','#E8635E','#F2B279'];
+        fan.forEach((c,i)=>{ const a=(10+i*16)*Math.PI/180, f=E(accessories,c,Math.cos(a)*.62,.72+Math.sin(a)*.62,-.40,.13,.40,.045); f.rotation.z=a-Math.PI/2; });
+        fan.slice(1,10).forEach((c,i)=>{ const a=(26+i*16)*Math.PI/180, f=E(accessories,mix(c,'#8A5A3B',.35),Math.cos(a)*.42,.72+Math.sin(a)*.42,-.36,.09,.26,.04); f.rotation.z=a-Math.PI/2; });
         break;
       }
       case 'leaf':
@@ -1553,15 +1555,15 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
         line('#FFF8EF',[[-.020,.815],[0,.803],[.020,.815]],.004);
         dot('#E49AA6',0,.735,.013,.013,.014);dot('#A6BD90',0,.686,.013,.013,.014);
         break;
-      case 'santasuit': {   // a santa suit: fluffy white trim down the front and around the hem, black belt with a gold buckle
-        box('#FFFDF6',0,.735,.055,.40);
-        for(const y of [.88,.80,.72,.66,.58]) dot('#FFFDF6',0,y,.034,.030,.012);
-        const belt=Math.min(.6,.576*Math.sqrt(Math.max(.02,1-((.62-.746)/.323)**2))*.98);
-        box('#3E3238',0,.62,belt,.06);
-        box('#F1CF7A',0,.62,.085,.078);box(acc,0,.62,.05,.042);
-        hem('#FFFDF6',.435);hem('#FFFDF6',.47);
-        for(let i=0;i<9;i++){ const x=-.26+i*.065; dot('#FFFDF6',x,.525,.036,.032,.014); }
+      case 'santasuit': {   // a proper round santa: big belly, fluffy white trim, black belt with a gold buckle
+        box('#FFFDF6',0,.86,.055,.17);
+        for(const y of [.92,.86,.80]) dot('#FFFDF6',0,y,.034,.030,.012);
         collar('#FFFDF6');for(const x of [-.10,-.05,.05,.10]) dot('#FFFDF6',x,.965-Math.abs(x)*.12,.03,.026,.012);
+        E(accessories,acc,0,.66,.07,.385,.32,.33);                                       // the belly
+        E(accessories,'#3E3238',0,.64,.07,.396,.078,.343);                               // belt around it
+        E(accessories,'#F1CF7A',0,.64,.405,.075,.062,.022); E(accessories,acc,0,.64,.418,.045,.034,.012);   // gold buckle
+        for(let i=0;i<16;i++){ const a=i/16*Math.PI*2; E(accessories,'#FFFDF6',Math.sin(a)*.36,.385,.07+Math.cos(a)*.30,.06,.045,.06); }   // fluffy hem
+        E(accessories,'#FFFDF6',0,.76,.375,.035,.11,.02);                                // white trim down the front of the belly
         break;
       }
       case 'xmastree':
@@ -2028,8 +2030,8 @@ function outfitPattern(key) {
     case "gingerbread": return `<g ${clip}><circle cx="40" cy="80.4" r="2.4" fill="#C98A5A"/><path d="M37.6 83h4.8l2.6 1.6-.6 1-2-.8v3.2l1.6 3-1 .6-3-2.6-3 2.6-1-.6 1.6-3v-3.2l-2 .8-.6-1z" fill="#C98A5A"/><circle cx="39.2" cy="80" r=".4" fill="#FFFFFF"/><circle cx="40.8" cy="80" r=".4" fill="#FFFFFF"/><path d="M39.2 81.2q.8.6 1.6 0" stroke="#FFFFFF" stroke-width=".4" fill="none"/><circle cx="40" cy="85.2" r=".5" fill="#F28D8D"/><circle cx="40" cy="87" r=".5" fill="#A7D7B6"/></g>`;
     case "xmastree": return `<g ${clip}><path d="M40 77.6L36 83h1.6L35 87.4h2L34 91.4h12l-3-4h2L42.4 83H44z" fill="#6FA35C"/><rect x="39.2" y="91.4" width="1.6" height="1.6" fill="#A8745A"/><path d="M40 76.2l.5 1 1.1.1-.8.7.2 1.1-1-.5-1 .5.2-1.1-.8-.7 1.1-.1z" fill="#F7DE6A"/><circle cx="38.4" cy="85" r=".6" fill="#F28D8D"/><circle cx="41.6" cy="86.6" r=".6" fill="#FFE07A"/><circle cx="39" cy="89.6" r=".6" fill="#AFC8EE"/><circle cx="42.4" cy="90" r=".6" fill="#F8C0D1"/></g>`;
     case "ghostcostume": return "";
-    case "turkeycostume": return `<g ${clip}><ellipse cx="40" cy="88" rx="7.5" ry="9" fill="#E9C9A2"/><g stroke="#D3A274" stroke-width="1.1" fill="none" stroke-linecap="round"><path d="M31 77l2 2 2-2M45 77l2 2 2-2M38 73.5l2 2 2-2M30 85l2 2 2-2M46 85l2 2 2-2"/></g><g stroke="#C9A17B" stroke-width=".9" fill="none" stroke-linecap="round" opacity=".8"><path d="M37 85l3 2 3-2M37 90l3 2 3-2"/></g></g>`;
-    case "santasuit": return `<g ${clip}><rect x="38.5" y="70" width="3" height="28" fill="#FFFDF6"/><rect x="26" y="86" width="28" height="3.8" fill="#3E3238"/><rect x="37.4" y="85.2" width="5.2" height="5.4" rx=".8" fill="none" stroke="#F2C94C" stroke-width="1.3"/>${[28,31.5,35,38.5,42,45.5,49,52.5].map(x => `<circle cx="${x}" cy="97.4" r="2.3" fill="#FFFDF6"/>`).join("")}<path d="M33.5 71.2q6.5 3.6 13 0" stroke="#FFFDF6" stroke-width="3.2" fill="none" stroke-linecap="round"/><circle cx="40" cy="79" r=".9" fill="#E8E2DA"/><circle cx="40" cy="93" r=".9" fill="#E8E2DA"/></g>`;
+    case "turkeycostume": return `<g class="turkeybody"><ellipse cx="40" cy="88.5" rx="20.5" ry="17.5" fill="#B9845A"/><path d="M24 86Q40 99 56 86" stroke="#9E6E46" stroke-width="1.2" fill="none" opacity=".55"/>${[[27,80],[33,77],[47,77],[53,80],[25,90],[55,90],[29,98],[51,98],[35,102],[45,102]].map(([x,y]) => `<path d="M${x - 3} ${y}q3 3.2 6 0" stroke="#9E6E46" stroke-width="1.1" fill="none" stroke-linecap="round" opacity=".75"/>`).join("")}<ellipse cx="40" cy="90" rx="9.5" ry="11.5" fill="#EBCBA3"/><g stroke="#D6AC80" stroke-width=".9" fill="none" stroke-linecap="round"><path d="M36.5 84q3.5 2.6 7 0M36 89q4 2.8 8 0M36.5 94q3.5 2.6 7 0"/></g><ellipse cx="21.5" cy="88" rx="5.5" ry="10" fill="#A47450" transform="rotate(12 21.5 88)"/><ellipse cx="58.5" cy="88" rx="5.5" ry="10" fill="#A47450" transform="rotate(-12 58.5 88)"/><path d="M19 84q2.5 2 5 0M18.5 89q2.8 2 5.5 0M56 84q2.5 2 5 0M56 89q2.8 2 5.5 0" stroke="#8A5E3D" stroke-width=".9" fill="none" stroke-linecap="round"/><path d="M32 70.5q8 4 16 0" stroke="#A47450" stroke-width="2.6" fill="none" stroke-linecap="round"/></g>`;   // a big round turkey body (covers most of the legs)
+    case "santasuit": return `<g class="santabelly"><path d="M22.5 98.5C20 85 27 72 40 71C53 72 60 85 57.5 98.5Z" fill="#D7303A"/><ellipse cx="40" cy="88.5" rx="17.5" ry="12.8" fill="#D7303A"/><path d="M27 82Q33 77.5 39 80" stroke="#FFFFFF" stroke-width="1.8" fill="none" opacity=".3" stroke-linecap="round"/><rect x="38.4" y="71" width="3.2" height="15" fill="#FFFDF6"/><path d="M23 87.4Q40 93.6 57 87.4" stroke="#3E3238" stroke-width="4.4" fill="none"/><rect x="36.9" y="87.6" width="6.2" height="5.6" rx="1" fill="none" stroke="#F2C94C" stroke-width="1.5"/>${[24.5,28,31.5,35,38.5,42,45.5,49,52.5,56].map(x => `<circle cx="${x}" cy="${(99.2 - Math.abs(x - 40) * .05).toFixed(1)}" r="2.6" fill="#FFFDF6"/>`).join("")}<path d="M33.5 72q6.5 3.8 13 0" stroke="#FFFDF6" stroke-width="3.4" fill="none" stroke-linecap="round"/><circle cx="40" cy="76" r=".9" fill="#E8E2DA"/><circle cx="40" cy="81" r=".9" fill="#E8E2DA"/></g>`;   // a big round santa belly
     case "devil": return `<g ${clip}><path d="M36 82c-1.6-1.8-4.4-.6-3.4 1.6l3.4 3.2 3.4-3.2c1-2.2-1.8-3.4-3.4-1.6z" transform="translate(4 0)" fill="#3A2419"/><path d="M34 71q6 3 12 0" stroke="#3A2419" stroke-width="1.6" fill="none" opacity=".5"/></g>`;
     case "angel": return `<g ${clip}><path d="M34 71q6 3.4 12 0" stroke="#F2C94C" stroke-width="2" fill="none"/><path d="M28 96h24" stroke="#F2C94C" stroke-width="1.8"/><path d="M40 80l1 2.4 2.6.2-2 1.6.6 2.6-2.2-1.4-2.2 1.4.6-2.6-2-1.6 2.6-.2z" fill="#F7DE6A"/></g>`;
     case "turkey": return `<g ${clip}>${["#E8635E","#F2B279","#F7D58A","#9CC78E","#F2B279","#E8635E"].map((c, i) => `<ellipse cx="${40 + Math.cos((200 + i * 28) * Math.PI / 180) * 7}" cy="${86 + Math.sin((200 + i * 28) * Math.PI / 180) * 7}" rx="2.6" ry="4.2" fill="${c}" transform="rotate(${-70 + i * 28} ${40 + Math.cos((200 + i * 28) * Math.PI / 180) * 7} ${86 + Math.sin((200 + i * 28) * Math.PI / 180) * 7})"/>`).join("")}<ellipse cx="40" cy="87" rx="5" ry="5.4" fill="#A87450"/><circle cx="40" cy="81.5" r="2.8" fill="#C99A6B"/><path d="M40.4 82.2l2 .8-2 .8z" fill="#F7D58A"/><path d="M39.4 83.4q.4 1.6 1.4 1.6" stroke="#E8635E" stroke-width="1" fill="none"/><circle cx="39.4" cy="81" r=".6" fill="#3A2419"/><g stroke="#FFFFFF" stroke-width="1" opacity=".55"><path d="M28 95h24M28 97.4h24"/></g></g>`;
@@ -2125,7 +2127,7 @@ function spriteSVG(k) {
     ${k.wear === "backpack" || k.wear === "cape" ? wearBack(k.wear, k.tint) : ""}
     ${sOut === "devil" ? `<path d="M50 94Q64 98 63 84Q62 76 66 72" stroke="#E8635E" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M66 72l-3.4 1.4 1.8 3.4z" fill="#E8635E" stroke="#E8635E" stroke-width="1.6" stroke-linejoin="round"/>` : ""}
     ${sOut === "angel" ? `<path d="M30 78Q14 66 8 78Q12 84 18 82Q14 90 22 90Q26 88 30 84Z" fill="#FFFFFF" stroke="#E4DDD3" stroke-width="1"/><path d="M50 78Q66 66 72 78Q68 84 62 82Q66 90 58 90Q54 88 50 84Z" fill="#FFFFFF" stroke="#E4DDD3" stroke-width="1"/>` : ""}
-    ${sOut === "turkeycostume" ? `<g class="turkeyfan">${["#E8635E","#F2B279","#F7D58A","#9CC78E","#F7D58A","#F2B279","#E8635E"].map((c, i) => { const a = 200 + i * 23.3, r = Math.PI / 180, x = (40 + Math.cos(a * r) * 17).toFixed(1), y = (84 + Math.sin(a * r) * 17).toFixed(1); return `<ellipse cx="${x}" cy="${y}" rx="5" ry="11.5" fill="${c}" stroke="rgba(90,56,38,.15)" stroke-width="1" transform="rotate(${(a + 90).toFixed(1)} ${x} ${y})"/>`; }).join("")}</g>` : ""}
+    ${sOut === "turkeycostume" ? `<g class="turkeyfan">${["#E8635E","#F2B279","#F7D58A","#9CC78E","#F7D58A","#F2B279","#E8635E"].map((c, i) => { const a = 196 + i * 24.7, r = Math.PI / 180, x = (40 + Math.cos(a * r) * 23).toFixed(1), y = (84 + Math.sin(a * r) * 23).toFixed(1); return `<ellipse cx="${x}" cy="${y}" rx="6.5" ry="14" fill="${c}" stroke="rgba(90,56,38,.15)" stroke-width="1" transform="rotate(${(a + 90).toFixed(1)} ${x} ${y})"/>`; }).join("")}</g>` : ""}
     ${k.wear === "cattail" ? `<path d="M47 95Q60 98 62 86Q64 76 57 74" stroke="${k.hair}" stroke-width="4.2" fill="none" stroke-linecap="round"/><path d="M57 74q-2 1 -1.6 3" stroke="${k.hair}" stroke-width="4.2" fill="none" stroke-linecap="round"/>` : ""}
     <clipPath id="shirtClip"><path d="M28 98C27 83 31 71 40 70C49 71 53 83 52 98Z"/></clipPath>
     <path d="M28 98C27 83 31 71 40 70C49 71 53 83 52 98Z" fill="${shirtC}"/>${sOut ? outfitPattern(sOut) : ""}
